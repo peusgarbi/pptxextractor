@@ -1,6 +1,17 @@
 import { DOMParser } from "xmldom";
 import JSZip from "jszip";
 
+interface GetTextFromPPTXSuccess {
+	slidesTextArray: string[];
+	error: false;
+}
+
+interface GetTextFromPPTXError {
+	error: true;
+}
+
+export type GetTextFromPPTX = GetTextFromPPTXSuccess | GetTextFromPPTXError;
+
 function getTextFromNodes(node: Document, tagName: string, namespaceURI: string) {
 	let text = "";
 	const textNodes = node.getElementsByTagNameNS(namespaceURI, tagName);
@@ -10,14 +21,14 @@ function getTextFromNodes(node: Document, tagName: string, namespaceURI: string)
 	return text.trim();
 }
 
-export async function getTextFromPPTX(file: File): Promise<string> {
+export async function getTextFromPPTX(file: File): Promise<GetTextFromPPTX> {
 	const arrayBuffer = await file.arrayBuffer();
 	try {
 		const zip = new JSZip();
 		await zip.loadAsync(arrayBuffer);
 
 		const aNamespace = "http://schemas.openxmlformats.org/drawingml/2006/main";
-		let text = "";
+		const slidesTextArray: string[] = [];
 
 		let slideIndex = 1;
 		while (true) {
@@ -30,14 +41,20 @@ export async function getTextFromPPTX(file: File): Promise<string> {
 			const parser = new DOMParser();
 			const xmlDoc = parser.parseFromString(slideXmlStr, "application/xml");
 
-			text += getTextFromNodes(xmlDoc, "t", aNamespace) + " ";
+			const slideText = getTextFromNodes(xmlDoc, "t", aNamespace) + " ";
+			slidesTextArray.push(slideText.trim());
 
 			slideIndex++;
 		}
 
-		return text.trim();
+		return {
+			slidesTextArray,
+			error: false,
+		};
 	} catch (err) {
 		console.error("Error extracting text from PPTX:", err);
-		return "";
+		return {
+			error: true,
+		};
 	}
 }

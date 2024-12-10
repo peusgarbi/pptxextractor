@@ -1,8 +1,9 @@
 <script lang="ts">
+	import type { GetTextFromPPTX } from "$lib";
 	import { getTextFromPPTX } from "$lib";
 
 	let files: FileList | undefined = $state();
-	let filesText: string | undefined = $state();
+	let filesText: GetTextFromPPTX | undefined = $state();
 </script>
 
 <main class="mx-auto p-2">
@@ -27,7 +28,15 @@
 	{/if}
 
 	{#if filesText}
+		{#if filesText.error}
+			<h2>Erro ao obter texto</h2>
+		{:else}
+			{#each filesText.slidesTextArray as text, i}
+				<h3>Slide {i + 1}</h3>
+				<p>{text}</p>
+				<div class="border-1 border"></div>
+			{/each}
+		{/if}
 		<h2>Texto:</h2>
-		<div>{filesText}</div>
 	{/if}
 </main>
