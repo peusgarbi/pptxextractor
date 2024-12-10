@@ -13,12 +13,16 @@ interface GetTextFromPPTXError {
 export type GetTextFromPPTX = GetTextFromPPTXSuccess | GetTextFromPPTXError;
 
 function getTextFromNodes(node: Document, tagName: string, namespaceURI: string) {
-	let text = "";
+	const textArray: string[] = [];
 	const textNodes = node.getElementsByTagNameNS(namespaceURI, tagName);
 	for (let i = 0; i < textNodes.length; i++) {
-		text += textNodes[i].textContent + " ";
+		const text = textNodes[i].textContent;
+		if (text && text !== "") {
+			textArray.push(text.trim());
+		}
 	}
-	return text.trim();
+
+	return textArray.join("\n");
 }
 
 export async function getTextFromPPTX(file: File): Promise<GetTextFromPPTX> {
@@ -47,6 +51,7 @@ export async function getTextFromPPTX(file: File): Promise<GetTextFromPPTX> {
 			slideIndex++;
 		}
 
+		console.log(slidesTextArray);
 		return {
 			slidesTextArray,
 			error: false,
