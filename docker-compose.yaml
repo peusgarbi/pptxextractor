@@ -1,0 +1,12 @@
+services:
+  pptxextractor:
+    image: pptxextractor:latest
+    container_name: pptxexctractor
+    ports:
+      - 3000:3000
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+      tags:
+        - pptxexctractor:latest

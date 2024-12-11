@@ -53,7 +53,7 @@
 <main class="mx-auto p-2">
 	<div class="flex flex-col gap-4">
 		<div class="flex flex-col gap-2 rounded-md bg-gray-200 p-4 drop-shadow-sm">
-			<label for="avatar">Escolha seus arquivos pdf:</label>
+			<label for="avatar">Escolha seus arquivos PPTX:</label>
 			<input bind:files multiple={true} id="avatar" name="avatar" type="file" accept=".pptx,.ppt" />
 		</div>
 		{#if files}
